@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional MR Management</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{display:flex;background:#f4f6f9;min-height:100vh}
+
+/* Sidebar */
+.sidebar{
+  width:240px;
+  background:linear-gradient(180deg,#003366,#004085);
+  color:white;
+  position:fixed;
+  height:100vh;
+  padding-top:20px;
+}
+.sidebar h2{text-align:center;margin-bottom:30px}
+.sidebar a{
+  display:block;
+  padding:12px 20px;
+  color:white;
+  text-decoration:none;
+  transition:0.3s;
+}
+.sidebar a:hover{background:#0056b3;padding-left:25px}
+
+/* Main */
+.main{margin-left:240px;padding:30px;width:100%}
+
+/* Topbar */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+.search-box{
+  display:flex;
+  gap:10px;
+}
+.search-box input{
+  padding:8px 12px;
+  width:250px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+.search-btn{
+  background:#004085;
+  color:white;
+}
+.logout-btn{
+  background:#dc3545;
+  color:white;
+}
+
+/* Buttons */
+.btn{
+  padding:8px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:500;
+}
+.add-btn{background:#28a745;color:white}
+.edit-btn{background:#ffc107;color:black}
+.delete-btn{background:#dc3545;color:white}
+
+/* Card */
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.05);
+}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{padding:10px;text-align:center}
+th{background:#004085;color:white}
+tr:nth-child(even){background:#f2f2f2}
+
+/* Pagination */
+.pagination{
+  margin-top:15px;
+  text-align:center;
+}
+.pagination button{
+  padding:6px 10px;
+  margin:2px;
+  border:none;
+  border-radius:4px;
+  background:#004085;
+  color:white;
+  cursor:pointer;
+}
+.pagination button.active{background:#28a745}
+
+/* Modal */
+.modal{
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.6);
+}
+.modal-content{
+  background:white;
+  width:400px;
+  margin:10% auto;
+  padding:20px;
+  border-radius:10px;
+}
+.modal-content input{
+  width:100%;
+  padding:8px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2>Admin Panel</h2>
+<a href="index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+<a href="mrmanage.html"><i class="fas fa-users"></i> Manage MR</a>
+<a href="#"><i class="fas fa-pills"></i> Products</a>
+<a href="#"><i class="fas fa-chart-line"></i> Reports</a>
+</div>
+
+<div class="main">
+
+<div class="topbar">
+<h2>Medical Representative Management</h2>
+
+<div style="display:flex; gap:20px; align-items:center;">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search MR...">
+    <button class="btn search-btn" onclick="searchMR()">
+      <i class="fas fa-search"></i> Search
+    </button>
+  </div>
+
+  <button class="btn logout-btn" onclick="logout()">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </button>
+</div>
+</div>
+
+<div class="card">
+<button class="btn add-btn" onclick="openModal()">+ Add MR</button>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Username</th>
+<th>Email</th>
+<th>Phone</th>
+<th>Area</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="mrTable"></tbody>
+</table>
+
+<div class="pagination" id="pagination"></div>
+</div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3>Add / Edit MR</h3>
+<input type="hidden" id="editIndex">
+<input type="text" id="username" placeholder="Username">
+<input type="email" id="email" placeholder="Email">
+<input type="text" id="phone" placeholder="Phone">
+<input type="text" id="area" placeholder="Assigned Area">
+<button class="btn add-btn" onclick="saveMR()">Save</button>
+<button class="btn delete-btn" onclick="closeModal()">Cancel</button>
+</div>
+</div>
+
+<script>
+let mrData = JSON.parse(localStorage.getItem("mrData")) || [];
+let currentPage = 1;
+const rowsPerPage = 5;
+
+/* Render Table */
+function renderTable(data = mrData){
+  const table = document.getElementById("mrTable");
+  table.innerHTML = "";
+
+  const start = (currentPage-1)*rowsPerPage;
+  const end = start+rowsPerPage;
+  const paginatedData = data.slice(start,end);
+
+  paginatedData.forEach((mr,index)=>{
+    table.innerHTML += `
+      <tr>
+        <td>${start+index+1}</td>
+        <td>${mr.username}</td>
+        <td>${mr.email}</td>
+        <td>${mr.phone}</td>
+        <td>${mr.area}</td>
+        <td>
+          <button class="btn edit-btn" onclick="editMR(${start+index})"><i class="fas fa-edit"></i></button>
+          <button class="btn delete-btn" onclick="deleteMR(${start+index})"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
+  });
+
+  renderPagination(data);
+}
+
+/* Pagination */
+function renderPagination(data){
+  const pageCount = Math.ceil(data.length/rowsPerPage);
+  const pagination = document.getElementById("pagination");
+  pagination.innerHTML = "";
+
+  for(let i=1;i<=pageCount;i++){
+    pagination.innerHTML += `
+      <button onclick="changePage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;
+  }
+}
+
+function changePage(page){
+  currentPage = page;
+  renderTable();
+}
+
+/* Search Button Function */
+function searchMR(){
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const filtered = mrData.filter(mr =>
+    mr.username.toLowerCase().includes(search) ||
+    mr.email.toLowerCase().includes(search) ||
+    mr.phone.toLowerCase().includes(search) ||
+    mr.area.toLowerCase().includes(search)
+  );
+  currentPage = 1;
+  renderTable(filtered);
+}
+
+/* Logout Function */
+function logout(){
+  if(confirm("Are you sure you want to logout?")){
+    alert("Logged out successfully!");
+    window.location.reload(); 
+  }
+}
+
+/* Save */
+function saveMR(){
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+  const area = document.getElementById("area").value;
+  const editIndex = document.getElementById("editIndex").value;
+
+  if(editIndex===""){
+    mrData.push({username,email,phone,area});
+  }else{
+    mrData[editIndex] = {username,email,phone,area};
+  }
+
+  localStorage.setItem("mrData",JSON.stringify(mrData));
+  closeModal();
+  renderTable();
+}
+
+/* Edit */
+function editMR(index){
+  openModal();
+  document.getElementById("editIndex").value=index;
+  document.getElementById("username").value=mrData[index].username;
+  document.getElementById("email").value=mrData[index].email;
+  document.getElementById("phone").value=mrData[index].phone;
+  document.getElementById("area").value=mrData[index].area;
+}
+
+/* Delete */
+function deleteMR(index){
+  mrData.splice(index,1);
+  localStorage.setItem("mrData",JSON.stringify(mrData));
+  renderTable();
+}
+
+/* Modal */
+function openModal(){
+  document.getElementById("modal").style.display="block";
+  document.getElementById("editIndex").value="";
+  document.getElementById("username").value="";
+  document.getElementById("email").value="";
+  document.getElementById("phone").value="";
+  document.getElementById("area").value="";
+}
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+
+/* Initial Load */
+renderTable();
+</script>
+
+</body>
+</html>
