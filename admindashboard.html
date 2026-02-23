@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - MRMS</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+:root{
+  --primary:#5B21B6;
+  --secondary:#6366F1;
+  --bg:#F3F4F6;
+  --glass:rgba(255,255,255,0.75);
+  --text:#1F2937;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',sans-serif;
+}
+
+body{
+  display:flex;
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* Sidebar */
+.sidebar{
+  width:240px;
+  background:linear-gradient(180deg,var(--primary),var(--secondary));
+  color:white;
+  height:100vh;
+  position:fixed;
+  padding-top:10px;
+}
+
+.sidebar h2{
+  text-align:center;
+  padding:20px 0;
+  font-size:22px;
+  letter-spacing:1px;
+}
+
+.sidebar a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 20px;
+  color:white;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.sidebar a:hover{
+  background:rgba(255,255,255,0.2);
+  padding-left:25px;
+}
+
+/* Main Content */
+.main-content{
+  margin-left:240px;
+  padding:30px;
+  width:100%;
+}
+
+/* Topbar */
+.topbar{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:25px;
+  background:white;
+  padding:12px 20px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  margin-bottom:25px;
+}
+
+.topbar i{
+  font-size:20px;
+  cursor:pointer;
+  color:var(--primary);
+}
+
+.topbar i:hover{
+  color:var(--secondary);
+}
+
+/* Notification */
+.notification{
+  position:relative;
+}
+
+.badge{
+  position:absolute;
+  top:-6px;
+  right:-8px;
+  background:red;
+  color:white;
+  border-radius:50%;
+  padding:2px 6px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+/* Dashboard Content */
+.dashboard-content{
+  background:var(--glass);
+  backdrop-filter:blur(15px);
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+.dashboard-content h1{
+  margin-bottom:25px;
+}
+
+/* Cards */
+.dashboard-boxes{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+
+.box{
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  color:white;
+  padding:25px;
+  border-radius:18px;
+  text-align:center;
+  transition:0.4s;
+  box-shadow:0 6px 18px rgba(0,0,0,0.1);
+}
+
+.box:hover{
+  transform:translateY(-10px) scale(1.05);
+}
+
+.box i{
+  font-size:30px;
+  margin-bottom:10px;
+}
+
+.box p{
+  font-size:14px;
+  opacity:0.9;
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{
+    width:200px;
+  }
+  .main-content{
+    margin-left:200px;
+  }
+}
+
+@media(max-width:600px){
+  .sidebar{
+    position:relative;
+    width:100%;
+    height:auto;
+  }
+  .main-content{
+    margin-left:0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>Admin Panel</h2>
+  <a href="admindashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+  <a href="managemr.html"><i class="fas fa-users"></i> Manage MR</a>
+  <a href="managep"><i class="fas fa-pills"></i> Manage Products</a>
+  <a href="#"><i class="fas fa-file-medical"></i> Manage Prescription</a>
+  <a href="#"><i class="fas fa-capsules"></i> Manage Dose</a>
+  <a href="#"><i class="fas fa-box"></i> Product Requests</a>
+  <a href="#"><i class="fas fa-calendar-check"></i> Manage Visits</a>
+  <a href="#"><i class="fas fa-comment-dots"></i> Manage Feedback</a>
+  <a href="#"><i class="fas fa-calendar"></i> Track Attendance</a>
+  <a href="#"><i class="fas fa-calendar-alt"></i> MR Leave Requests</a>
+  <a href="#"><i class="fas fa-chart-line"></i> Reports</a>
+</div>
+
+<div class="main-content">
+
+  <div class="topbar">
+
+    <div class="notification">
+      <i class="fas fa-bell"></i>
+      <span class="badge">3</span>
+    </div>
+
+    <a href="#">
+      <i class="fas fa-sign-out-alt"></i>
+    </a>
+
+  </div>
+
+  <div class="dashboard-content">
+    <h1>Welcome, Admin 👋</h1>
+
+    <div class="dashboard-boxes">
+
+      <div class="box">
+        <i class="fas fa-user-plus"></i>
+        <p>Registered Medical Representatives</p>
+      </div>
+
+      <div class="box">
+        <i class="fas fa-user-md"></i>
+        <p>Associated Doctors</p>
+      </div>
+
+      <div class="box">
+        <i class="fas fa-pills"></i>
+        <p>Approved Medicines</p>
+      </div>
+
+      <div class="box">
+        <i class="fas fa-calendar-check"></i>
+        <p>Planned Visits</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
